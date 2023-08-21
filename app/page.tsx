@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'; // Import useEffect
+import Image from 'next/image';
+import Link from 'next/link';
 import {
     createClientComponentClient,
   } from "@supabase/auth-helpers-nextjs";
@@ -13,10 +15,12 @@ import {
   } from "@/components/ui/card";
 
   interface Product {
+    url: string;
     id: number;
     name: string;
     description: string;
     category: string;
+    site: string;
   }
   
   export default function Page() {
@@ -24,12 +28,15 @@ import {
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
       supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     });
+
+
   
     const [products, setProducts] = useState<Product[]>([]); // State for products
     const [searchText, setSearchText] = useState<string>('');
   
     useEffect(() => {
       // Fetch products using Supabase
+
       async function fetchProducts() {
         const { data } = await supabase.from('products').select();
         setProducts(data || []);
@@ -45,10 +52,10 @@ import {
   
     return (
       <>
-        <div>
+        <div className='w-1/2'>
           <Input
             type="text"
-            placeholder="Search for a Product"
+            placeholder="Search for a type of Product"
             value={searchText}
             onChange={handleSearchChange}
           />
@@ -59,11 +66,12 @@ import {
               <Card key={product.id}>
                 <CardHeader>
                   <CardTitle>{product.name}</CardTitle>
+                  <Image src={product.url} width={100} height={100} alt='product logo'/>
                 </CardHeader>
                 <CardContent>
                   <p>{product.description}</p>
                 </CardContent>
-                <CardFooter>{product.category}</CardFooter>
+                <CardFooter><Link href={product.site}>Check it out!</Link></CardFooter>
               </Card>
             )
           ))}
