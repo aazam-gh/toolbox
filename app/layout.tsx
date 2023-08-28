@@ -1,9 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Figtree } from 'next/font/google'
 import Header from '@/components/Header'
 
-const inter = Inter({ subsets: ['latin'] })
+const font = Figtree({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'toolbox',
@@ -17,8 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Header title='search for the right tools'/>
+      <head>
+      </head>
+      <body className={font.className}>
+        <Header/>
         {children}
       </body>
     </html>

@@ -1,82 +1,44 @@
 'use client'
-import { useState, useEffect } from 'react'; // Import useEffect
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import {
-    createClientComponentClient,
-  } from "@supabase/auth-helpers-nextjs";
-  import { Input } from "@/components/ui/input";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardFooter,
-  } from "@/components/ui/card";
+  createClientComponentClient,
+} from "@supabase/auth-helpers-nextjs";
+import { ProductList, Product } from "@/components/ProductList";
+import { SearchBar } from "@/components/SearchBar";
+import AuthForm from './AuthForm';
 
-  interface Product {
-    url: string;
-    id: number;
-    name: string;
-    description: string;
-    category: string;
-    site: string;
-  }
-  
-  export default function Page() {
-    const supabase = createClientComponentClient({
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    });
+export default function Page() {
+  const supabase = createClientComponentClient({
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  });
 
+  const [products, setProducts] = useState<Product[]>([]);
+  const [searchText, setSearchText] = useState<string>('');
 
-  
-    const [products, setProducts] = useState<Product[]>([]); // State for products
-    const [searchText, setSearchText] = useState<string>('');
-  
-    useEffect(() => {
-      // Fetch products using Supabase
+  useEffect(() => {
+    async function fetchProducts() {
+      const { data } = await supabase.from('products').select();
+      setProducts(data || []);
+    }
 
-      async function fetchProducts() {
-        const { data } = await supabase.from('products').select();
-        setProducts(data || []);
-      }
-  
-      fetchProducts(); // Call the fetchProducts function
-  
-    }, []); // Empty dependency array ensures the effect runs only once, like componentDidMount
-  
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchText(event.target.value);
-    };
-  
-    return (
-      <>
+    fetchProducts();
+  }, []);
+
+  const handleSearchChange = (text: string) => {
+    setSearchText(text);
+  };
+
+  return (
+    <>
+      <div className='mt-5 flex flex-col items-center justify-center'>
+
+        <SearchBar searchText={searchText} onSearchChange={handleSearchChange} />
         <div className='w-1/2'>
-          <Input
-            type="text"
-            placeholder="Search for a type of Product"
-            value={searchText}
-            onChange={handleSearchChange}
-          />
+          <AuthForm />
         </div>
-        <ul className="my-auto mt-5 text-foreground flex flex-wrap justify-center gap-4">
-          {products?.map((product) => (
-            product.category.includes(searchText) && (
-              <Card key={product.id}>
-                <CardHeader>
-                  <CardTitle>{product.name}</CardTitle>
-                  <Image src={product.url} width={100} height={100} alt='product logo'/>
-                </CardHeader>
-                <CardContent>
-                  <p>{product.description}</p>
-                </CardContent>
-                <CardFooter><Link href={product.site}>Check it out!</Link></CardFooter>
-              </Card>
-            )
-          ))}
-        </ul>
-      </>
-    );
-  }
-  
+      </div>
+      <ProductList products={products} searchText={searchText} />
+    </>
+  );
+}
