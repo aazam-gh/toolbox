@@ -1,13 +1,8 @@
 import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import Header from '@/components/Header'
 
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
+export const metadata = {
   title: 'toolbox',
-  description: 'Find the right tools for your job',
+  description: 'Discover the Right Software Tools',
 }
 
 export default function RootLayout({
@@ -17,9 +12,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Header title='search for the right tools'/>
-        {children}
+      <body>
+        <main className="min-h-screen bg-background flex flex-col items-center">
+          {children}
+        </main>
       </body>
     </html>
   )
